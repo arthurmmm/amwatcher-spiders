@@ -114,6 +114,8 @@ class BilibiliSpider(BaseSpider):
         kobj = meta['kobj']
         
         logger.info('开始爬取官方番剧, URL: %s' % response.url)
+        if 'proxy' in meta:
+            logger.debug('使用代理: %s' % meta['proxy'])
         feed = dict(meta['feed'])
         
         search_results = response.css('.so-episode') 
@@ -148,6 +150,8 @@ class BilibiliSpider(BaseSpider):
         feed = dict(meta['feed'])
         
         logger.info('开始爬取番剧详情, URL: %s' % response.url)
+        if 'proxy' in meta:
+            logger.debug('使用代理: %s' % meta['proxy'])
         
         try:
             season = json.loads(
@@ -202,6 +206,8 @@ class BilibiliSpider(BaseSpider):
         kobj = meta['kobj']
         
         logger.info('[%s]开始爬取搜索内容, URL: %s' % (kobj['keyword'], response.url))
+        if 'proxy' in meta:
+            logger.debug('使用代理: %s' % meta['proxy'])
         
         video_data = json.loads(response.body_as_unicode()) 
         if video_data['code'] == 1:
@@ -241,6 +247,8 @@ class BilibiliSpider(BaseSpider):
         feed = dict(meta['feed'])
         
         logger.info('开始爬取视频播放页, URL: %s' % response.url)
+        if 'proxy' in meta:
+            logger.debug('使用代理: %s' % meta['proxy'])
         
         feed['href'] = response.url
         feed['uploader'] = response.css('meta[name="author"]::attr(content)').extract_first()
@@ -262,3 +270,6 @@ class BilibiliSpider(BaseSpider):
         logger.debug('处理后：%s' % feed)
         if feed:
             yield feed
+            
+    def closed(self, reason):
+        logger.info('完成！')

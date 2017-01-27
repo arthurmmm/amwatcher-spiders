@@ -87,19 +87,5 @@ class DynamicProxyMiddleware(object):
         proxy = redis_db.srandmember(dbsetting.PROXY_SET)
         if proxy:
             proxy = proxy.decode('utf-8')
-        logger.debug('###使用代理：%s' % proxy)
+        # logger.debug('###使用代理：%s' % proxy)
         request.meta['proxy'] = proxy
-        
-class CollectException(object):
-
-    def process_exception(self, request, exception, spider):
-        FORMAT = '%(asctime)s %(levelno)s/%(lineno)d: %(message)s'
-        elogger = logging.getLogger('ExceptionLog')
-        elogger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(fmt=FORMAT)
-        rfh = RotatingFileHandler('/var/tmp/amwatcher_exceptions.log', maxBytes=5*1024*1024, backupCount=10)
-        rfh.setFormatter(formatter)
-        rfh.setLevel(logging.DEBUG)
-        elogger.addHandler(rfh)
-        
-        elogger.exception(exception)
