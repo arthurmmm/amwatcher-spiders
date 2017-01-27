@@ -26,6 +26,8 @@ class BilibiliSpider(BaseSpider):
     upbangumi_pattern = 'http://search.bilibili.com/ajax_api/video?keyword=%(keyword)s&page=1&order=pubdate&tids_1=13&tids_2=33'
     download_delay = 1
     
+    handle_httpstatus_list = [302]
+    
     def __init__(self, keyword=None, test=None, *args, **kwargs):
         self.keyword = keyword
         self.test = test
@@ -208,8 +210,11 @@ class BilibiliSpider(BaseSpider):
         logger.info('[%s]开始爬取搜索内容, URL: %s' % (kobj['keyword'], response.url))
         if 'proxy' in meta:
             logger.debug('使用代理: %s' % meta['proxy'])
-        
-        video_data = json.loads(response.body_as_unicode()) 
+        try:
+            video_data = json.loads(response.body_as_unicode()) 
+        except Exception as e:
+            logger.error(response.body_as_unicode())
+            logger.exception(e)
         if video_data['code'] == 1:
             logger.info('未找到相关视频！')
             return 

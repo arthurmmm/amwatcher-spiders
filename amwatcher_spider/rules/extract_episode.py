@@ -36,8 +36,14 @@ def tweak(kobj, feed):
         re.compile('(\d+)'), # 匹配所有数字
     ]
     # 匹配片名后的字段
-    last_word = feed['match_keyword'].split()[-1]
-    after_kw = feed['title'].split(last_word)[-1]
+    kw_pattern = '.*?'.join(feed['match_keyword'].split())
+    kw_pattern = '.*%s(.*)' % kw_pattern
+    regex = re.search(feed['title'], kw_pattern)
+    if regex:
+        after_kw = regex.group(1)
+    else:
+        after_kw = feed['title']
+        
     for regex in regex_episode:
         ep_match = [ e for e in regex.finditer(after_kw) ]
         if ep_match:

@@ -8,6 +8,8 @@
 import random
 from scrapy import signals
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware 
+from scrapy.downloadermiddlewares.retry import RetryMiddleware  
+from scrapy.exceptions import NotConfigured  
 import os
 import logging
 from logging.handlers import RotatingFileHandler
@@ -70,7 +72,7 @@ class AmwatcherUserAgentMiddleware(UserAgentMiddleware):
         ua = random.choice(self.user_agent_list)
         if ua:
             request.headers.setdefault('User-Agent', ua)
-
+            
 class DynamicProxyMiddleware(object):
 
     def process_request(self, request, spider):

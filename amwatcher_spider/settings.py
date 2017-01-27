@@ -56,12 +56,13 @@ COOKIES_ENABLED = False
 DOWNLOADER_MIDDLEWARES = {
    'amwatcher_spider.middlewares.AmwatcherUserAgentMiddleware': 543,
    'amwatcher_spider.middlewares.DynamicProxyMiddleware': 544,
-   'scrapy.downloadermiddlewares.retry.RetryMiddleware': 351,
-   'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
+   'scrapy.downloadermiddlewares.retry.RetryMiddleware': 350,
+   'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 351,
 }
 
 DOWNLOAD_TIMEOUT = 5
-RETRY_TIMES = 3
+RETRY_TIMES = 5
+RETRY_HTTP_CODES = [500, 502, 503, 504, 400, 408, 302]
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html

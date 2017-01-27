@@ -13,6 +13,8 @@ def tweak(kobj, feed):
                 match_num += 1
         if cast in feed['title']:
             match_num += 1
+        if cast in feed['description']:
+            match_num += 1
     if match_num >= 1:
         return True, feed
     else:
