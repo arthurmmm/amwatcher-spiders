@@ -79,46 +79,50 @@ class BilibiliSpider(BaseSpider):
         
         for kobj in self.mongo_keywords.find({'status': 'activated'}):
             keyword = kobj['keyword']
-            if kobj['type'] == 'anime': 
-                # 搜索官方版权番剧
-                bangumi_url = self.bangumi_pattern % { 'keyword': keyword }
-                feed = {
-                    'source': 'bilibili',
-                    'type': 'bangumi',
-                    'keyword': kobj['keyword'],
-                    'keyword_id': kobj['_id'],
-                }
-                yield Request(url=bangumi_url, meta={ 
-                    'kobj': kobj, 
-                    'feed': feed, 
-                    'last_update': last_update_dict[kobj['_id']]['bilibili']['bangumi'],
-                }, callback=self.parse_bangumi)
-                # 搜索UP主上传番剧
-                upbangumi_url = self.upbangumi_pattern % { 'keyword': keyword }
-                feed = {
-                    'source': 'bilibili',
-                    'type': 'upbangumi',
-                    'keyword': kobj['keyword'],
-                    'keyword_id': kobj['_id'],
-                }
-                yield Request(url=upbangumi_url, meta={ 
-                    'kobj': kobj, 
-                    'feed': feed,
-                    'last_update': last_update_dict[kobj['_id']]['bilibili']['upbangumi'],
-                }, callback=self.parse_search_result)
-            elif kobj['type'] == 'drama':
-                updrama_url = self.updrama_pattern % { 'keyword': keyword }
-                feed = {
-                    'source': 'bilibili',
-                    'type': 'updrama',
-                    'keyword': kobj['keyword'],
-                    'keyword_id': kobj['_id'],
-                }
-                yield Request(url=updrama_url, meta={ 
-                    'kobj': kobj, 
-                    'feed': feed,
-                    'last_update': last_update_dict[kobj['_id']]['bilibili']['updrama'],
-                }, callback=self.parse_search_result)
+            search_words = [keyword]
+            if 'alias' in kobj:
+                search_words.extend(kobj['alias'])
+            for search_word in search_words:
+                if kobj['type'] == 'anime': 
+                    # 搜索官方版权番剧
+                    bangumi_url = self.bangumi_pattern % { 'keyword': search_word }
+                    feed = {
+                        'source': 'bilibili',
+                        'type': 'bangumi',
+                        'keyword': kobj['keyword'],
+                        'keyword_id': kobj['_id'],
+                    }
+                    yield Request(url=bangumi_url, meta={ 
+                        'kobj': kobj, 
+                        'feed': feed, 
+                        'last_update': last_update_dict[kobj['_id']]['bilibili']['bangumi'],
+                    }, callback=self.parse_bangumi)
+                    # 搜索UP主上传番剧
+                    upbangumi_url = self.upbangumi_pattern % { 'keyword': search_word }
+                    feed = {
+                        'source': 'bilibili',
+                        'type': 'upbangumi',
+                        'keyword': kobj['keyword'],
+                        'keyword_id': kobj['_id'],
+                    }
+                    yield Request(url=upbangumi_url, meta={ 
+                        'kobj': kobj, 
+                        'feed': feed,
+                        'last_update': last_update_dict[kobj['_id']]['bilibili']['upbangumi'],
+                    }, callback=self.parse_search_result)
+                elif kobj['type'] == 'drama':
+                    updrama_url = self.updrama_pattern % { 'keyword': search_word }
+                    feed = {
+                        'source': 'bilibili',
+                        'type': 'updrama',
+                        'keyword': kobj['keyword'],
+                        'keyword_id': kobj['_id'],
+                    }
+                    yield Request(url=updrama_url, meta={ 
+                        'kobj': kobj, 
+                        'feed': feed,
+                        'last_update': last_update_dict[kobj['_id']]['bilibili']['updrama'],
+                    }, callback=self.parse_search_result)
 
     def parse_bangumi(self, response):
         ''' 爬取B站官方番剧和UP主上传番剧
