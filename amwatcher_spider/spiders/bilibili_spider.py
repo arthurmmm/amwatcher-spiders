@@ -16,6 +16,10 @@ from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger(__name__)
 rfh = RotatingFileHandler('/var/tmp/amwatcher_bilibili_spider.log', maxBytes=5*1024*1024, backupCount=10)
+FORMAT = '%(asctime)s %(levelno)s/%(lineno)d: %(message)s'
+formatter = logging.Formatter(fmt=FORMAT)
+rfh.setFormatter(formatter)
+rfh.setLevel(logging.DEBUG)
 logger.addHandler(rfh)
 
 class BilibiliSpider(BaseSpider):
@@ -25,12 +29,12 @@ class BilibiliSpider(BaseSpider):
     bangumi_season_pattern = 'http://bangumi.bilibili.com/jsonp/seasoninfo/%(season_id)s.ver?callback=seasonListCallback&jsonp=jsonp'
     upbangumi_pattern = 'http://search.bilibili.com/ajax_api/video?keyword=%(keyword)s&page=1&order=pubdate&tids_1=13&tids_2=33'
     download_delay = 1
-    
     handle_httpstatus_list = [302]
     
     def __init__(self, keyword=None, test=None, *args, **kwargs):
         self.keyword = keyword
         self.test = test
+        self.spider_logger = logger
         super(BilibiliSpider, self).__init__()
     
     def start_requests(self):
@@ -117,7 +121,7 @@ class BilibiliSpider(BaseSpider):
         
         logger.info('开始爬取官方番剧, URL: %s' % response.url)
         if 'proxy' in meta:
-            logger.debug('使用代理: %s' % meta['proxy'])
+            logger.debug('使用代理[%s]访问[%s]' % (meta['proxy'], response.url))
         feed = dict(meta['feed'])
         
         search_results = response.css('.so-episode') 
@@ -153,7 +157,7 @@ class BilibiliSpider(BaseSpider):
         
         logger.info('开始爬取番剧详情, URL: %s' % response.url)
         if 'proxy' in meta:
-            logger.debug('使用代理: %s' % meta['proxy'])
+            logger.debug('使用代理[%s]访问[%s]' % (meta['proxy'], response.url))
         
         try:
             season = json.loads(
@@ -209,7 +213,7 @@ class BilibiliSpider(BaseSpider):
         
         logger.info('[%s]开始爬取搜索内容, URL: %s' % (kobj['keyword'], response.url))
         if 'proxy' in meta:
-            logger.debug('使用代理: %s' % meta['proxy'])
+            logger.debug('使用代理[%s]访问[%s]' % (meta['proxy'], response.url))
         try:
             video_data = json.loads(response.body_as_unicode()) 
         except Exception as e:
@@ -253,7 +257,7 @@ class BilibiliSpider(BaseSpider):
         
         logger.info('开始爬取视频播放页, URL: %s' % response.url)
         if 'proxy' in meta:
-            logger.debug('使用代理: %s' % meta['proxy'])
+            logger.debug('使用代理[%s]访问[%s]' % (meta['proxy'], response.url))
         
         feed['href'] = response.url
         feed['uploader'] = response.css('meta[name="author"]::attr(content)').extract_first()

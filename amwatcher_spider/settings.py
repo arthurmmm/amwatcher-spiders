@@ -54,14 +54,14 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   'amwatcher_spider.middlewares.AmwatcherUserAgentMiddleware': 543,
-   'amwatcher_spider.middlewares.DynamicProxyMiddleware': 544,
    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 350,
    'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 351,
+   'amwatcher_spider.middlewares.AmwatcherUserAgentMiddleware': 543,
+   'amwatcher_spider.middlewares.DynamicProxyMiddleware': 349,
 }
 
 DOWNLOAD_TIMEOUT = 5
-RETRY_TIMES = 5
+RETRY_TIMES = 3
 RETRY_HTTP_CODES = [500, 502, 503, 504, 400, 408, 302]
 
 # Enable or disable extensions
@@ -109,12 +109,12 @@ RULE_MAPPING = {
         'upbangumi': [
             'keyword_in_title',
             'extract_episode',
-            'validate_cast',
+            'validate_tags_include1',
         ],
         'updrama': [
             'keyword_in_title',
             'extract_episode',
-            'validate_cast',
+            'validate_tags_include1',
         ],
     }
 }
