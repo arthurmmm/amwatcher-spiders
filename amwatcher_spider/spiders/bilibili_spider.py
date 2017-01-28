@@ -15,12 +15,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger(__name__)
-rfh = RotatingFileHandler('/var/tmp/amwatcher_bilibili_spider.log', maxBytes=5*1024*1024, backupCount=10)
-FORMAT = '%(asctime)s %(levelno)s/%(lineno)d: %(message)s'
-formatter = logging.Formatter(fmt=FORMAT)
-rfh.setFormatter(formatter)
-rfh.setLevel(logging.DEBUG)
-logger.addHandler(rfh)
+
 
 class BilibiliSpider(BaseSpider):
     name = 'bilibili'
@@ -30,8 +25,23 @@ class BilibiliSpider(BaseSpider):
     upbangumi_pattern = 'http://search.bilibili.com/ajax_api/video?keyword=%(keyword)s&page=1&order=pubdate&tids_1=13&tids_2=33'
     download_delay = 1
     handle_httpstatus_list = [302]
+    log_file = '/var/tmp/amwatcher_bilibili_spider.log'
+    test_log_file = '/var/tmp/amwatcher_bilibili_spider.test.log'
     
     def __init__(self, keyword=None, test=None, *args, **kwargs):
+        if test:
+            self.rfh = RotatingFileHandler(self.test_log_file, maxBytes=1*1024*1024, backupCount=10)
+        else:
+            self.rfh = RotatingFileHandler(self.log_file, maxBytes=1*1024*1024, backupCount=10)
+        FORMAT = '%(asctime)s %(levelno)s/%(lineno)d: %(message)s'
+        formatter = logging.Formatter(fmt=FORMAT)
+        self.rfh.setFormatter(formatter)
+        self.rfh.setLevel(logging.DEBUG)
+        logger.addHandler(self.rfh)
+        
+        statslogger = logging.getLogger('scrapy.statscollectors')
+        statslogger.addHandler(self.rfh)
+        
         self.keyword = keyword
         self.test = test
         self.spider_logger = logger
@@ -281,4 +291,6 @@ class BilibiliSpider(BaseSpider):
             yield feed
             
     def closed(self, reason):
+        statslogger = logging.getLogger('scrapy.statscollectors')
+        statslogger.removeHandler(self.rfh)
         logger.info('完成！')

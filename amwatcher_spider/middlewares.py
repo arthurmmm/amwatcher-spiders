@@ -89,5 +89,5 @@ class DynamicProxyMiddleware(object):
         proxy = redis_db.srandmember(dbsetting.PROXY_SET)
         if proxy:
             proxy = proxy.decode('utf-8')
-        spider.spider_logger.debug('使用代理[%s]访问%s' % (proxy, request.url))
+        spider.spider_logger.debug('使用代理[%s]访问[%s]' % (proxy, request.url))
         request.meta['proxy'] = proxy
