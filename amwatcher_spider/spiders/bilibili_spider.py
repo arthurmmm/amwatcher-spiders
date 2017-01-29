@@ -191,11 +191,11 @@ class BilibiliSpider(BaseSpider):
                 '%Y-%m-%d %H:%M:%S'
             )
             # 检查更新时间(匹配更新时间)
-            last_update_time, last_update_feed = meta['last_update']
-            logger.info('上次更新：%s %s' % (last_update_time, last_update_feed))
-            if last_update_time and last_update_time >= epfeed['upload_time']:
-                logger.info('该条目已更新，略过...')
-                continue
+            # last_update_time, last_update_feed = meta['last_update']
+            # logger.info('上次更新：%s %s' % (last_update_time, last_update_feed))
+            # if last_update_time and last_update_time >= epfeed['upload_time']:
+                # logger.info('该条目已更新，略过...')
+                # continue
                 
             epfeed['uploader'] = 'bilibili'
             epfeed['season'] = season['season_title']
@@ -210,7 +210,15 @@ class BilibiliSpider(BaseSpider):
             epfeed['tags'] = [ a['actor'] for a in season['actor'] ]
             epfeed['description'] = season['evaluate']
             epfeed = self.pipeRules(kobj, epfeed)
-            if epfeed:
+            
+            # 检查是否存在
+            exfeed = self.mongo_feeds.find_one({
+                'title': epfeed['title'],
+                'keyword': kobj['keyword'],
+            })
+            if exfeed:
+                logger.info('该条目已存在，略过...')
+            elif epfeed:
                 yield epfeed
         
     def parse_search_result(self, response):
@@ -241,28 +249,37 @@ class BilibiliSpider(BaseSpider):
         next_page = cur_page + 1
         video_html = video_data['html']
         video_response = HtmlResponse(url=response.url, body=video_data['html'].encode('utf-8'))
-        self.mongo_logs.insert({
-            'timestamp': datetime.now(),
-            'event': 'start parse_updrama',
-            'keyword': kobj['keyword'],
-            'page': cur_page,
-            'total_page': total_page,
-            'url': response.url,
-        })
-        for video in video_response.css('li.video.matrix'):
+        # self.mongo_logs.insert({
+            # 'timestamp': datetime.now(),
+            # 'event': 'start parse_updrama',
+            # 'keyword': kobj['keyword'],
+            # 'page': cur_page,
+            # 'total_page': total_page,
+            # 'url': response.url,
+        # })
+        for video in video_response.css('li.video'):
+            # logger.info('### %s' % video)
             player_url = 'http:' + video.css('a::attr(href)').extract_first()
             title = video.css('.title::attr(title)').extract_first()
             update_date = video.css('span.so-icon.time::text').extract()[-1].replace('\t', '').replace('\n', '')
             update_date = datetime.strptime(update_date+' 23:59:59', '%Y-%m-%d %H:%M:%S')
             # 检查更新时间(匹配时间和番剧名字)
-            last_update_time, last_update_feed = meta['last_update']
-            logger.info('上次更新：%s %s' % (last_update_time, last_update_feed))
-            if (last_update_feed and last_update_feed == title) or \
-                (last_update_feed and last_update_time > update_date):
-                logger.info('该条目已更新，结束搜索...')
-                break # 搜索结果是按照时间排序的，因此直接结束本次搜索
-                
-            yield Request(url=player_url, meta=meta, callback=self.parse_player)
+            # last_update_time, last_update_feed = meta['last_update']
+            # logger.info('上次更新：%s %s' % (last_update_time, last_update_feed))
+            # if (last_update_feed and last_update_feed == title) or \
+                # (last_update_feed and last_update_time > update_date):
+                # logger.info('该条目已更新，结束搜索...')
+                # break # 搜索结果是按照时间排序的，因此直接结束本次搜索
+            
+            # 检查是否存在
+            exfeed = self.mongo_feeds.find_one({
+                'title': title,
+                'keyword': kobj['keyword'],
+            })
+            if exfeed:
+                logger.info('该条目已存在，略过...')
+            else:
+                yield Request(url=player_url, meta=meta, callback=self.parse_player)
                 
     def parse_player(self, response):
         meta = response.meta
