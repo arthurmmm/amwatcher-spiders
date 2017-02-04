@@ -4,4 +4,4 @@ FROM daocloud.io/python:3-onbuild
 RUN rm -f /etc/localtime
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime 
 
-CMD [ "uwsgi", "--ini", "./uwsgi.ini" ]
+CMD [ "python", "./start.py", "--crawl", "--analyze", "--series" ]
