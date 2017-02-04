@@ -33,7 +33,8 @@ ROBOTSTXT_OBEY = False
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = False
+COOKIES_ENABLED = True
+# COOKIES_DEBUG = True
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -54,10 +55,11 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+   # 'scrapy.contrib.downloadermiddleware.cookies.CookiesMiddleware': 348,
+   'amwatcher_spider.middlewares.DynamicProxyMiddleware': 349,
    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 350,
    'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 351,
    'amwatcher_spider.middlewares.AmwatcherUserAgentMiddleware': 543,
-   'amwatcher_spider.middlewares.DynamicProxyMiddleware': 349,
 }
 
 DOWNLOAD_TIMEOUT = 5
@@ -101,20 +103,13 @@ SPIDER_CONTRACTS = {
     'amwatcher_spider.contracts.KobjContract': 10,
 }
 
-RULE_MAPPING = {
-    'bilibili': {
-        'bangumi': [
-            'keyword_in_title',
-        ],
-        'upbangumi': [
-            'keyword_in_title',
-            'extract_episode',
-            'validate_tags_include1',
-        ],
-        'updrama': [
-            'keyword_in_title',
-            'extract_episode',
-            'validate_tags_include1',
-        ],
-    }
-}
+# Local DB setting
+import yaml
+def local_config(mode):
+    cfg_file = {
+        'test': '/etc/amwatcher-spider.test.yml',
+        'prod': '/etc/amwatcher-spider.yml',
+    }[mode]
+    with open(cfg_file, 'r') as f:
+        config = yaml.load(f)
+    return config

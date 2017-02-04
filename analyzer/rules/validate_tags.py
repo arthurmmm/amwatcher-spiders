@@ -2,7 +2,7 @@
 
 import re
     
-def tweak(kobj, feed):
+def tweak(kobj, feed, match_num=1):
     # cast in tag
     if 'tags' not in kobj:
         return True, feed

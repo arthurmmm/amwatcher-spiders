@@ -5,9 +5,11 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-import pymongo
+from pymongo import MongoClient
 import json
-import amwatcher_spider.dbsetting as dbsetting
+from amwatcher_spider import settings
+import yaml
+import logging
 
 class AmwatcherSpiderPipeline(object):
     def process_item(self, item, spider):
@@ -15,21 +17,18 @@ class AmwatcherSpiderPipeline(object):
 
 class MongoDBPipeline(object):
     
-    # collection = 'rawfeeds_test'
-    
     def open_sipder(self, spider):
-        self.client = pymongo.MongoClient(dbsetting.MONGO_URI)
-        self.db = self.client[dbsetting.MONGO_DATABASE]
+        LOCAL_CONFIG = settings.local_config(spider.mode)
+        self.client = MongoClient(LOCAL_CONFIG['MONGO_URI'])
+        self.db = self.client[LOCAL_CONFIG['MONGO_DATABASE']]
         
     def close_sipder(self, spider):
         self.client.close()
         
     def process_item(self, item, spider):
-        self.client = pymongo.MongoClient(dbsetting.MONGO_URI)
-        self.db = self.client[dbsetting.MONGO_DATABASE]
-        
-        if hasattr(spider, 'test') and spider.test:
-            self.db[dbsetting.FEED_TEST_COLLECTION].insert(dict(item))
-        else:
-            self.db[dbsetting.FEED_COLLECTION].insert(dict(item))
+        LOCAL_CONFIG = settings.local_config(spider.mode)
+        self.client = MongoClient(LOCAL_CONFIG['MONGO_URI'])
+        self.db = self.client[LOCAL_CONFIG['MONGO_DATABASE']]
+
+        self.db['feeds'].insert(dict(item))
         return item

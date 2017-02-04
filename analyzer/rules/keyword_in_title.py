@@ -2,12 +2,12 @@
 
 import re
 
-def tweak(kobj, feed):
-    if matchKeyword(kobj['keyword'], feed):
-        feed['match_keyword'] = kobj['keyword']
+def tweak(feed, condition, *args):
+    if matchKeyword(condition['keyword'], feed):
+        feed['match_keyword'] = condition['keyword']
         return True, feed
-    if 'alias' in kobj:
-        for kw in kobj['alias']:
+    if 'alias' in condition:
+        for kw in condition['alias']:
             if matchKeyword(kw, feed):
                 feed['match_keyword'] = kw
                 return True, feed
