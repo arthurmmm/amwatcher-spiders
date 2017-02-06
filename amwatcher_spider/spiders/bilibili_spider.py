@@ -186,7 +186,7 @@ class BilibiliSpider(BaseSpider):
             
             # 检查是否存在
             exfeed = self.mongo_feeds.find_one({
-                'title': epfeed['title'],
+                # 'title': epfeed['title'],
                 'href': epfeed['href'],
             })
             if exfeed:
@@ -232,7 +232,7 @@ class BilibiliSpider(BaseSpider):
             
             # 检查是否存在
             exfeed = self.mongo_feeds.find_one({
-                'title': title,
+                # 'title': title,
                 'href': player_url,
             })
             if exfeed:
