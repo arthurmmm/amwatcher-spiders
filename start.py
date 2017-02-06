@@ -60,13 +60,22 @@ def main(args):
         # 整体分析采集数据并构造剧集库
         kobjs = mongo_keywords.find({'status': 'activated'})
         for kobj in kobjs:
-            # kobj = mongo_keywords.find({'_id': keyword_id})
+            # 按剧集组织feed并记录到series collection中
             logger.info('开始分析：%s' % kobj['keyword'])
             feeds = mongo_feeds.find({
                 'keyword_id': kobj['_id'], 
                 'break_rules': {'$exists': False},
             }).sort('upload_time', DESCENDING)
             analyzer.timeline(feeds, mongo_series)
+            # 在keyword中记录有效feed数
+            vfeed_count = feeds.count()
+            feed_count = mongo_feeds.find({ 'keyword_id': kobj['_id'] }).count()
+            mongo_keywords.update({'_id': kobj['_id']}, {
+                "$set": {
+                    'valid_feed_count': vfeed_count,
+                    'feed_count': feed_count,
+                }
+            })
         logger.info('分析完成！')
         
     

@@ -187,7 +187,7 @@ class BilibiliSpider(BaseSpider):
             # 检查是否存在
             exfeed = self.mongo_feeds.find_one({
                 'title': epfeed['title'],
-                'keyword_id': kobj['_id'],
+                'href': epfeed['href'],
             })
             if exfeed:
                 logger.info('该条目已存在，略过...')
@@ -224,11 +224,16 @@ class BilibiliSpider(BaseSpider):
             title = video.css('.title::attr(title)').extract_first()
             update_date = video.css('span.so-icon.time::text').extract()[-1].replace('\t', '').replace('\n', '')
             update_date = datetime.strptime(update_date+' 23:59:59', '%Y-%m-%d %H:%M:%S')
+            if not player_url.endswith('/'):
+                player_url += '/'
+            meta['feed'].update({
+                'href': player_url
+            })
             
             # 检查是否存在
             exfeed = self.mongo_feeds.find_one({
                 'title': title,
-                'keyword_id': kobj['_id'],
+                'href': player_url,
             })
             if exfeed:
                 logger.info('该条目已存在，略过...')
@@ -242,7 +247,7 @@ class BilibiliSpider(BaseSpider):
         
         logger.info('开始爬取视频播放页, URL: %s' % response.url)
         
-        feed['href'] = response.url
+        # feed['href'] = response.url
         feed['uploader'] = response.css('meta[name="author"]::attr(content)').extract_first()
         try:
             feed['upload_time'] = datetime.strptime(

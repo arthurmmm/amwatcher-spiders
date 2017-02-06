@@ -10,18 +10,22 @@ DEFAULT_ROUTER = {
     'bilibili': {
         'bangumi': [
             ['keyword_in_title', 0],
+            ['upload_within', 365],
         ],
         'upbangumi': [
             ['keyword_in_title', 0],
             ['extract_episode'],
+            ['upload_within', 365],
         ],
         'updrama': [
             ['keyword_in_title', 0],
             ['extract_episode'],
+            ['upload_within', 365],
         ],
         'upvariety': [
             ['keyword_in_title', 0],
             ['extract_episode'],
+            ['upload_within', 365],
         ],
     },
 }
@@ -32,9 +36,6 @@ def timeline(feeds, mongo_series):
     '''
     
     # 先循环有episode的feed, 再循环没有episode的feed
-    # for f in feeds:
-        # if 'episode' not in f:
-    # logger.debug([feed for feed in feeds if 'episode' not in feed])
     feeds_episode = []
     feeds_no_episode = []
     for feed in feeds:
@@ -42,14 +43,8 @@ def timeline(feeds, mongo_series):
             feeds_episode.append(feed)
         else:
             feeds_no_episode.append(feed)
-    # feeds_episode = [feed for feed in feeds if 'episode' in feed]
-    # feeds_no_episode = [feed for feed in feeds if 'episode' not in feed]
-    # logger.debug([feed for feed in feeds if 'episode' not in feed])
-    # logger.debug(feeds_episode)
-    # logger.debug(feeds_no_episode)
     for feed in feeds_episode:
         # 有episode
-        # if 'episode' in feed:
         ep_range = list(range(int(feed['episode'][0]), int(feed['episode'][-1])+1))
         # 单剧集资源
         if len(ep_range) == 1:
@@ -80,7 +75,7 @@ def timeline(feeds, mongo_series):
                         'season': feed['season'][0],
                     },
                     '$addToSet': {
-                        'feeds': feed['title'],
+                        'feeds': feed['_id'],
                     }
                 }, upsert=True)
             else:
@@ -96,7 +91,7 @@ def timeline(feeds, mongo_series):
                         'season': feed['season'][0],
                     },
                     '$addToSet': {
-                        'feeds': feed['title'],
+                        'feeds': feed['_id'],
                     }
                 }, upsert=True)
         # 多剧集资源
@@ -119,7 +114,7 @@ def timeline(feeds, mongo_series):
                                 'season': feed['season'][0],
                             },
                             '$addToSet': {
-                                'feeds': feed['title'],
+                                'feeds': feed['_id'],
                             }
                         }, upsert=True)
             # 默认支持剧集数少于5，否则只取最后一个剧集
@@ -139,7 +134,7 @@ def timeline(feeds, mongo_series):
                             'season': feed['season'][0],
                         },
                         '$addToSet': {
-                            'feeds': feed['title'],
+                            'feeds': feed['_id'],
                         }
                     }, upsert=True)
                     
@@ -158,7 +153,7 @@ def timeline(feeds, mongo_series):
                 'season': feed['season'][0],
             },
             '$addToSet': {
-                'feeds': feed['title'],
+                'feeds': feed['_id'],
             }
         }, upsert=True)
 
