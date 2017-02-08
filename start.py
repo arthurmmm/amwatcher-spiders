@@ -66,9 +66,9 @@ def main(args):
                 'keyword_id': kobj['_id'], 
                 'break_rules': {'$exists': False},
             }).sort('upload_time', DESCENDING)
+            vfeed_count = feeds.count()
             analyzer.timeline(feeds, mongo_series)
             # 在keyword中记录有效feed数
-            vfeed_count = feeds.count()
             feed_count = mongo_feeds.find({ 'keyword_id': kobj['_id'] }).count()
             mongo_keywords.update({'_id': kobj['_id']}, {
                 "$set": {
@@ -76,6 +76,18 @@ def main(args):
                     'feed_count': feed_count,
                 }
             })
+        # 计算并保存feeds_first_upload
+        for ep in mongo_series.find({}):
+            first_upload_time = min(ep['feeds_upload_time'])
+            logger.debug(first_upload_time)
+            mongo_series.find_one_and_update(
+                {'_id': ep['_id']},
+                {
+                    '$set': {
+                        'first_upload_time': first_upload_time,
+                    },
+                },
+            )
         logger.info('分析完成！')
         
     

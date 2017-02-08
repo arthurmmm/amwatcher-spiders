@@ -76,6 +76,7 @@ def timeline(feeds, mongo_series):
                     },
                     '$addToSet': {
                         'feeds': feed['_id'],
+                        'feeds_upload_time': feed['upload_time'],
                     }
                 }, upsert=True)
             else:
@@ -92,6 +93,7 @@ def timeline(feeds, mongo_series):
                     },
                     '$addToSet': {
                         'feeds': feed['_id'],
+                        'feeds_upload_time': feed['upload_time'],
                     }
                 }, upsert=True)
         # 多剧集资源
@@ -115,6 +117,7 @@ def timeline(feeds, mongo_series):
                             },
                             '$addToSet': {
                                 'feeds': feed['_id'],
+                                'feeds_upload_time': feed['upload_time'],
                             }
                         }, upsert=True)
             # 默认支持剧集数少于5，否则只取最后一个剧集
@@ -135,6 +138,7 @@ def timeline(feeds, mongo_series):
                         },
                         '$addToSet': {
                             'feeds': feed['_id'],
+                            'feeds_upload_time': feed['upload_time'],
                         }
                     }, upsert=True)
                     
@@ -154,6 +158,7 @@ def timeline(feeds, mongo_series):
             },
             '$addToSet': {
                 'feeds': feed['_id'],
+                'feeds_upload_time': feed['upload_time'],
             }
         }, upsert=True)
 
