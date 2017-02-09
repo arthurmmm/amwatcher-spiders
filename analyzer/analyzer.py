@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from datetime import datetime, timedelta
 from . import rules
 from collections import defaultdict
 
@@ -28,6 +29,12 @@ DEFAULT_ROUTER = {
             ['upload_within', 365],
         ],
     },
+}
+
+EXPIRE_DURATION = {
+    'anime': 60,
+    'drama': 60,
+    'variety': 60,
 }
 
 def timeline(feeds, mongo_series):
@@ -181,3 +188,43 @@ def analyze(feed, condition, router=DEFAULT_ROUTER):
         feed.pop('break_rules')
     feed['analyzed'] = True
     return feed
+    
+def expire(mongo_feeds, mongo_keywords):
+    active_keywords = list(mongo_keywords.find({
+        'status': 'activated',
+    }))
+    last_uploads = list(mongo_feeds.aggregate([
+        {
+            '$match': {
+                'keyword_id': {'$in': [k['_id'] for k in active_keywords]},
+                'break_rules': {'$exists': False}
+            }
+        },
+        {
+            '$group': {
+                '_id': '$keyword_id',
+                'last_upload': {'$max': '$upload_time'},
+            }
+        },
+    ]))
+    
+    last_upload_dict = {item['_id']:item['last_upload'] for item in last_uploads}
+    
+    now_time = datetime.now()
+    new_expire_count = 0
+    for keyword in active_keywords:
+        expire_dur = EXPIRE_DURATION[keyword['type']]
+        if keyword['_id'] in last_upload_dict:
+            last_upload = last_upload_dict[keyword['_id']]
+        else:
+            continue
+        if now_time - last_upload > timedelta(days=expire_dur):
+            logger.info('关键字%s已过期，最后更新于: %s...' % (keyword['keyword'], last_upload))
+            mongo_keywords.find_one_and_update(
+                {'_id': keyword['_id']},
+                {
+                    '$set': {'status': 'expired'}
+                }
+            )
+            new_expire_count += 1
+    return new_expire_count
