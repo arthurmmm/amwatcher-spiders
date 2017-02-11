@@ -49,6 +49,8 @@ def tweak(feed, condition, *args):
     regex_date = [
         re.compile('(?<![0-9])\d{2}(\d{6})(?![0-9])'), # 20170203
         re.compile('(?<![0-9])(\d{6})(?![0-9])'), # 170203
+        re.compile('(?<![0-9])(\d{2}\.\d{2}.\d{2})(?![0-9])'), # 17.02.03
+        re.compile('(?<![0-9])\d{2}(\d{2}\.\d{2}.\d{2})(?![0-9])'), # 2017.02.03
     ]
     # 弱匹配
     regex_weak = [
@@ -102,7 +104,7 @@ def tweak(feed, condition, *args):
             if not ep_match:
                 break
             # 匹配后从match_title中删去对应字符
-            feed['date_episode'].append(ep_match.group(1))
+            feed['date_episode'].append(ep_match.group(1).replace('.', ''))
             match_title = regex.sub('', match_title, count=1)
     
     logger.debug(match_title)
