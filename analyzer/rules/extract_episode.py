@@ -20,6 +20,8 @@ def tweak(feed, condition, *args):
     regex_exclude = [
         re.compile('(\d+)[月|年|春|夏|秋|冬|金|木|水|火|土]', re.I), 
         re.compile('(\d+)p', re.I),  # 720p, 1080p ....
+        re.compile('(\d+)时', re.I),  
+        re.compile('(\d+)時', re.I),  
     ]
     # 强匹配季数
     regex_season = [
@@ -32,10 +34,10 @@ def tweak(feed, condition, *args):
     ]
     # 强匹配集数
     regex_strong = [
-        re.compile('episode[\s\.]?(\d+)', re.I), # episode 01
-        re.compile('ep[\s\.]?(\d+)', re.I), # ep01
-        re.compile('E[\s\.]?(\d+)', re.I), # E01
-        re.compile('sp[\s\.](\d+)\s?', re.I), # sp01
+        re.compile('(?<![a-zA-Z])episode[\s\.]?(\d+)', re.I), # episode 01
+        re.compile('(?<![a-zA-Z])ep[\s\.]?(\d+)', re.I), # ep01
+        re.compile('(?<![a-zA-Z])E[\s\.]?(\d+)', re.I), # E01
+        re.compile('(?<![a-zA-Z])sp[\s\.](\d+)\s?', re.I), # sp01
         re.compile('(\d+)\s?话'), # X话
         re.compile('(\d+)\s?回'), # X回
         re.compile('(\d+)\s?集'), # X集

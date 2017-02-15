@@ -53,8 +53,11 @@ def main(args):
             feeds = mongo_feeds.find({'analyzed': {'$exists': False}})
 
         for feed in feeds:
-            condition = mongo_keywords.find_one({'_id': feed['keyword_id']})
-            feed = analyzer.analyze(feed, condition)
+            condition = mongo_keywords.find_one({'_id': feed['keyword_id'], 'status': 'activated'})
+            if not condition:
+                feed['break_rules'].append('keyword_expire')
+            else:
+                feed = analyzer.analyze(feed, condition)
             mongo_feeds.find_one_and_replace({'_id': feed['_id']}, feed)
     if args.series:
         # 整体分析采集数据并构造剧集库

@@ -3,14 +3,19 @@
 import re
 
 def tweak(feed, condition, *args):
-    if matchKeyword(condition['keyword'], feed):
-        feed['match_keyword'] = condition['keyword']
-        return True, feed
-    if 'alias' in condition:
-        for kw in condition['alias']:
-            if matchKeyword(kw, feed):
-                feed['match_keyword'] = kw
-                return True, feed
+    try:
+        if matchKeyword(condition['keyword'], feed):
+            feed['match_keyword'] = condition['keyword']
+            return True, feed
+        if 'alias' in condition:
+            for kw in condition['alias']:
+                if matchKeyword(kw, feed):
+                    feed['match_keyword'] = kw
+                    return True, feed
+    except Exception as e:
+        print(feed)
+        print(condition)
+        raise
     return False, feed
     
 def matchKeyword(kw, feed):
