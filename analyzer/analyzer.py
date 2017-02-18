@@ -29,6 +29,28 @@ DEFAULT_ROUTER = {
             ['upload_within', 365],
         ],
     },
+    'iqiyi': {
+        'bangumi': [
+            ['keyword_in_title', 0],
+            ['extract_episode'],
+            ['upload_within', 365],
+        ],
+        'upbangumi': [
+            ['keyword_in_title', 0],
+            ['extract_episode'],
+            ['upload_within', 365],
+        ],
+        'drama': [
+            ['keyword_in_title', 0],
+            ['extract_episode'],
+            ['upload_within', 365],
+        ],
+        'updrama': [
+            ['keyword_in_title', 0],
+            ['extract_episode'],
+            ['upload_within', 365],
+        ],
+    },
 }
 
 EXPIRE_DURATION = {

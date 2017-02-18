@@ -43,8 +43,10 @@ def main(args):
     if args.crawl:
         if args.env == 'test':
             os.system('scrapy crawl bilibili -a mode=test')
+            os.system('scrapy crawl iqiyi -a mode=test')
         else:
             os.system('scrapy crawl bilibili')
+            os.system('scrapy crawl iqiyi')
     if args.analyze:
         # 逐条分析采集数据
         if args.analyze_all:
@@ -53,6 +55,7 @@ def main(args):
             feeds = mongo_feeds.find({'analyzed': {'$exists': False}})
 
         for feed in feeds:
+            feed['break_rules'] = []
             condition = mongo_keywords.find_one({'_id': feed['keyword_id'], 'status': 'activated'})
             if not condition:
                 feed['break_rules'].append('keyword_expire')

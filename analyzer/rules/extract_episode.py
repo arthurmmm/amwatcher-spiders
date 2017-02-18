@@ -22,6 +22,11 @@ def tweak(feed, condition, *args):
         re.compile('(\d+)p', re.I),  # 720p, 1080p ....
         re.compile('(\d+)时', re.I),  
         re.compile('(\d+)時', re.I),  
+        re.compile('pv(\d+)', re.I),  
+        re.compile('特典(\d+)', re.I),  
+        re.compile('特报(\d+)', re.I),  
+        re.compile('预告(\d+)', re.I), 
+        re.compile('part(\d+)', re.I), 
     ]
     # 强匹配季数
     regex_season = [
@@ -56,10 +61,10 @@ def tweak(feed, condition, *args):
     ]
     # 弱匹配
     regex_weak = [
-        re.compile('(?<![0-9])0(\d)(?![0-9])'), # 优先匹配0开头的数字 01 02 ...
-        re.compile('(?<![0-9])(\d\d\d)(?![0-9])'), # 匹配三位数
-        re.compile('(?<![0-9])(\d\d)(?![0-9])'), # 匹配两位数
-        re.compile('(?<![0-9])(\d)(?![0-9])'), # 匹配一位数
+        re.compile('(?<![0-9])0(\d)(?=[^\w]|$)'), # 优先匹配0开头的数字 01 02 ...
+        re.compile('(?<![0-9])(\d\d\d)(?=[^\w]|$)'), # 匹配三位数
+        re.compile('(?<![0-9])(\d\d)(?=[^\w]|$)'), # 匹配两位数
+        re.compile('(?<![0-9])(\d)(?=[^\w]|$)'), # 匹配一位数
     ]
     
     match_title = str(feed['title'])

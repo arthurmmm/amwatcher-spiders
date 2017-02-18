@@ -82,13 +82,15 @@ class AmwatcherUserAgentMiddleware(UserAgentMiddleware):
             request.headers.setdefault('User-Agent', ua)
             
 class DynamicProxyMiddleware(object):
-    
 
     def process_request(self, request, spider):
         '''
         将request设置为使用代理
         '''
-        LOCAL_CONFIG = settings.local_config(spider.mode)
+        if hasattr(spider, 'mode'):
+            LOCAL_CONFIG = settings.local_config(spider.mode)
+        else:
+            LOCAL_CONFIG = settings.local_config('test')
         redis_db = StrictRedis(
             host=LOCAL_CONFIG['REDIS_HOST'], 
             port=LOCAL_CONFIG['REDIS_PORT'], 
@@ -97,23 +99,30 @@ class DynamicProxyMiddleware(object):
         ) 
         if hasattr(spider, 'spider_logger'):
             logger = spider.spider_logger
+        else:
+            logger = logging.getLogger('__main__')
         
         # 访问REDIS获得一个随机账号
         account = redis_db.srandmember(ACCOUNT_SET % spider.name)
-        account = json.loads(account.decode('utf-8'))
-        # 访问REDIS查询是否有对应代理
-        proxy = redis_db.get(PROXY_KEY % account['key'])
-        # 查询PROXY_SET看看代理是否有效
-        if proxy and redis_db.sismember(PROXY_SET, proxy):
-            pass
+        if account:
+            account = json.loads(account.decode('utf-8'))
+            # 访问REDIS查询是否有对应代理
+            proxy = redis_db.get(PROXY_KEY % account['key'])
+            # 查询PROXY_SET看看代理是否有效
+            if proxy and redis_db.sismember(PROXY_SET, proxy):
+                pass
+            else:
+                logger.debug('帐号[%s]代理已失效或不存在，重新绑定代理...' % account['key'])
+                proxy = redis_db.srandmember(PROXY_SET)
+                redis_db.set(PROXY_KEY % account['key'], proxy)
+            proxy = proxy.decode('utf-8')
+            request.cookies = account['cookies']
+            logger.debug('使用帐号[%s]代理[%s]访问[%s]' % (account['key'], proxy, request.url))
         else:
-            logger.debug('帐号[%s]代理已失效或不存在，重新绑定代理...' % account['key'])
             proxy = redis_db.srandmember(PROXY_SET)
-            redis_db.set(PROXY_KEY % account['key'], proxy)
-        proxy = proxy.decode('utf-8')
-            
-        logger.debug('使用帐号[%s]代理[%s]访问[%s]' % (account['key'], proxy, request.url))
+            proxy = proxy.decode('utf-8')
+            logger.debug('使用代理[%s]访问[%s]' % (proxy, request.url))
         request.meta['proxy'] = proxy
-        request.cookies = account['cookies']
+        
         
         
