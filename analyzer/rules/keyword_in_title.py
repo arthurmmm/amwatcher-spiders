@@ -21,6 +21,7 @@ def tweak(feed, condition, *args):
 def matchKeyword(kw, feed):
     words = [ w for w in kw.split() ]
     word_pattern = '.*'.join(words)
+    word_pattern = '(?<!\w)%s(?!\w)' % word_pattern
     # TODO - wildly match chinese episode name
     if not re.search(word_pattern, feed['title'], re.I):
         return False
