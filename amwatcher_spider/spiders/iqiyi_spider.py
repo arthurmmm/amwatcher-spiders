@@ -114,6 +114,8 @@ class IqiyiSpider(BaseSpider):
                     else:
                         yield epfeed
             else:
+                continue # 非官方资源质量太差，仅收录官方。。
+                '''
                 epfeed = dict(feed)
                 epfeed['type'] = 'upbangumi'
                 epfeed['title'] = link.css('::attr(title)').extract_first()
@@ -138,6 +140,7 @@ class IqiyiSpider(BaseSpider):
                     logger.info('该条目已存在，略过...')
                 else:
                     yield epfeed
+                '''
 
     def parse_drama(self, response):
         ''' 爬取爱奇艺电视剧
@@ -182,6 +185,8 @@ class IqiyiSpider(BaseSpider):
                     else:
                         yield epfeed
             else:
+                continue # 非官方资源质量太差，仅收录官方。。
+                '''
                 epfeed = dict(feed)
                 epfeed['type'] = 'updrama'
                 epfeed['title'] = link.css('::attr(title)').extract_first()
@@ -202,3 +207,4 @@ class IqiyiSpider(BaseSpider):
                     logger.info('该条目已存在，略过...')
                 else:
                     yield epfeed
+                '''
