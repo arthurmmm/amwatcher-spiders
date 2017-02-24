@@ -80,6 +80,7 @@ class AmwatcherUserAgentMiddleware(UserAgentMiddleware):
         ua = random.choice(self.user_agent_list)
         if ua:
             request.headers.setdefault('User-Agent', ua)
+
             
 class DynamicProxyMiddleware(object):
 
@@ -102,6 +103,8 @@ class DynamicProxyMiddleware(object):
         else:
             logger = logging.getLogger('__main__')
         
+        
+        
         # 访问REDIS获得一个随机账号
         account = redis_db.srandmember(ACCOUNT_SET % spider.name)
         if account:
@@ -123,6 +126,11 @@ class DynamicProxyMiddleware(object):
             proxy = proxy.decode('utf-8')
             logger.debug('使用代理[%s]访问[%s]' % (proxy, request.url))
         request.meta['proxy'] = proxy
-        
+        # 最后一次retry不使用代理
+        logger.debug(request.meta)
+        if 'retry_times' in request.meta and request.meta['retry_times'] == 3:
+            logger.debug('最后一次retry不使用代理')
+            request.meta['proxy'] = ''
+            return
         
         
