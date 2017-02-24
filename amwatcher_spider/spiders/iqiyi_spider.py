@@ -24,7 +24,7 @@ class IqiyiSpider(BaseSpider):
     bangumi_pattern = 'http://so.iqiyi.com/so/q_%(keyword)s_ctg_动漫_t_0_page_1_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_'
     drama_pattern = 'http://so.iqiyi.com/so/q_%(keyword)s_ctg_电视剧_t_0_page_1_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_'
     variety_pattern = 'http://so.iqiyi.com/so/q_%(keyword)s_ctg_综艺_t_0_page_1_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_'
-    download_delay = 3
+    download_delay = 1
     handle_httpstatus_list = [302]
     
     def __init__(self, mode='prod', *args, **kwargs):
