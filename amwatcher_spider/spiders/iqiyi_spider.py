@@ -95,7 +95,7 @@ class IqiyiSpider(BaseSpider):
                     # feed['season'] = 'NO_SEASON'
                 feed['tags'] = series.css('.result_info_cont-half a::attr(title)').extract()
                 feed['description'] = series.css('.result_info_txt::text').extract_first()
-                for ep in series.css('ul[data-tvlist-elem="defaultlist"] .album_item'):
+                for ep in series.css('ul[data-tvlist-elem="list"] .album_item'):
                     epfeed = dict(feed)
                     if ep.css('.icon-album-vip'):
                         epfeed['title'] += '(爱奇艺VIP)'

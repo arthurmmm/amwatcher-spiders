@@ -44,9 +44,11 @@ def main(args):
         if args.env == 'test':
             os.system('scrapy crawl bilibili -a mode=test')
             os.system('scrapy crawl iqiyi -a mode=test')
+            os.system('scrapy crawl youku -a mode=test')
         else:
             os.system('scrapy crawl bilibili')
             os.system('scrapy crawl iqiyi')
+            os.system('scrapy crawl youku')
     if args.analyze:
         # 逐条分析采集数据
         if args.analyze_all:
