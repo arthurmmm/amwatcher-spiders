@@ -11,6 +11,7 @@ DEFAULT_ROUTER = {
     'bilibili': {
         'bangumi': [
             ['keyword_in_title', 0],
+            ['extract_episode'],
             ['upload_within', 365],
         ],
         'upbangumi': [

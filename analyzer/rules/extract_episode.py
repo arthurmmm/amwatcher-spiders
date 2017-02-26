@@ -6,6 +6,18 @@ import logging
 logger = logging.getLogger('__main__')
 
 CHN_INT = '[一二三四五六七八九十]'
+CHN_MAP = {
+    '一': '1',
+    '二': '2',
+    '三': '3',
+    '四': '4',
+    '五': '5',
+    '六': '6',
+    '七': '7',
+    '八': '8',
+    '九': '9',
+    '十': '10',
+}
 
 def toInt(str):
     try:
@@ -22,20 +34,21 @@ def tweak(feed, condition, *args):
         re.compile('(\d+)p', re.I),  # 720p, 1080p ....
         re.compile('(\d+)时', re.I),  
         re.compile('(\d+)時', re.I),  
-        re.compile('pv(\d+)', re.I),  
-        re.compile('特典(\d+)', re.I),  
-        re.compile('特报(\d+)', re.I),  
-        re.compile('预告(\d+)', re.I), 
-        re.compile('part(\d+)', re.I), 
+        re.compile('pv\s*(\d+)', re.I),  
+        re.compile('特典\s*(\d+)', re.I),  
+        re.compile('特报\s*(\d+)', re.I),  
+        re.compile('预告\s*(\d+)', re.I), 
+        re.compile('part\s*(\d+)', re.I), 
+        re.compile('剧场版\s*(\d+)'),
+        re.compile('OVA\s*(\d+)'),
     ]
     # 强匹配季数
     regex_season = [
         re.compile('season[\s\.]?(\d+)', re.I), # season 01
         re.compile('SE[\s\.]?(\d+)', re.I), # SE01
         re.compile('s[\s\.]?(\d+)', re.I), # S01
-        re.compile('(\d+)\s?季'), # X季
-        re.compile('(剧场版)'),
-        re.compile('(OVA)'),
+        re.compile('(\d+)\s?季'), # 1季
+        re.compile('(%s)\s?季' % CHN_INT), # 一季
     ]
     # 强匹配集数
     regex_strong = [
@@ -91,7 +104,13 @@ def tweak(feed, condition, *args):
             if not ep_match:
                 break
             # 匹配后从match_title中删去对应字符
-            feed['season'].append(ep_match.group(1))
+            season_text = ep_match.group(1)
+            # logger.debug(season_text)
+            if season_text in CHN_MAP:
+                season = CHN_MAP[season_text]
+            else:
+                season = season_text
+            feed['season'].append(season)
             match_title = regex.sub('', match_title, count=1)
     
     # 强匹配集数
@@ -100,7 +119,7 @@ def tweak(feed, condition, *args):
             ep_match = regex.search(match_title)
             if not ep_match:
                 break
-            # 匹配后从match_title中删去对应字符
+            
             feed['episode'].append(ep_match.group(1))
             match_title = regex.sub('', match_title, count=1)
 
@@ -142,7 +161,7 @@ def tweak(feed, condition, *args):
     else:
         feed['episode'].sort()
     if not feed['season']:
-        feed['season'] = ['NO_SEASON']
+        feed['season'] = ['-1']
     else:
         feed['season'].sort()
 

@@ -172,13 +172,13 @@ class BilibiliSpider(BaseSpider):
             )
                 
             epfeed['uploader'] = 'bilibili'
-            epfeed['season'] = [season['season_title']]
-            try:
-                epfeed['episode'] = [int(ep['index'])]
-            except Exception:
-                logger.error('Invalid episode %s' % ep['index'])
-                continue
-            epfeed['title'] = ' '.join([season['title'], ep['index'], ep['index_title']])
+            # epfeed['season'] = [season['season_title']]
+            # try:
+                # epfeed['episode'] = [int(ep['index'])]
+            # except Exception:
+                # logger.error('Invalid episode %s' % ep['index'])
+                # continue
+            epfeed['title'] = '%s %s %s' % (season['title'], ep['index'], ep['index_title'])
             epfeed['scrapy_time'] = datetime.now()
             epfeed['scrapy_start_time'] = self.start_timestamp
             epfeed['tags'] = [ a['actor'] for a in season['actor'] ]
