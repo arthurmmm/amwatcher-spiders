@@ -139,7 +139,7 @@ class BilibiliSpider(BaseSpider):
             logger.info('[%s] 未找到官方番剧...' % kobj['keyword'])
         for series in search_results.css('a.list.sm'):
             bangumi_url = 'http:' + series.xpath('./@href').extract_first()
-            season_id = bangumi_url.split('/')[-1]
+            season_id = bangumi_url.split('/')[-1].split('?')[0]
             season = series.xpath('./@title').extract_first()
             feed['season'] = [season]
             feed['type'] = 'bangumi'
@@ -178,7 +178,7 @@ class BilibiliSpider(BaseSpider):
             # except Exception:
                 # logger.error('Invalid episode %s' % ep['index'])
                 # continue
-            epfeed['title'] = '%s %s %s' % (season['title'], ep['index'], ep['index_title'])
+            epfeed['title'] = '%s ep%s %s' % (season['title'], ep['index'], ep['index_title'])
             epfeed['scrapy_time'] = datetime.now()
             epfeed['scrapy_start_time'] = self.start_timestamp
             epfeed['tags'] = [ a['actor'] for a in season['actor'] ]
