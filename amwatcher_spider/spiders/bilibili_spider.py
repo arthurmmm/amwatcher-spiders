@@ -188,6 +188,7 @@ class BilibiliSpider(BaseSpider):
             exfeed = self.mongo_feeds.find_one({
                 'title': epfeed['title'],
                 'keyword_title': kobj['keyword'],
+                'source': epfeed['source'],
             })
             if exfeed:
                 logger.info('该条目已存在，略过...')
