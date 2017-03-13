@@ -140,6 +140,7 @@ class BilibiliSpider(BaseSpider):
         for series in search_results.css('a.list.sm'):
             bangumi_url = 'http:' + series.xpath('./@href').extract_first()
             season_id = bangumi_url.split('/')[-1].split('?')[0]
+            logger.debug('SeasonID: %s' % season_id)
             season = series.xpath('./@title').extract_first()
             feed['season'] = [season]
             feed['type'] = 'bangumi'
