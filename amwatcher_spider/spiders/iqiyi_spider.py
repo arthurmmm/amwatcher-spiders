@@ -16,7 +16,6 @@ from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger(__name__)
 
-BILIBILI_ACCOUNT_SET = 'amwatcher:spider:bilibili:accounts'
 PROXY_KEY = 'amwatcher:spider:login_proxy:%s'
 
 class IqiyiSpider(BaseSpider):
@@ -24,8 +23,9 @@ class IqiyiSpider(BaseSpider):
     bangumi_pattern = 'http://so.iqiyi.com/so/q_%(keyword)s_ctg_动漫_t_0_page_1_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_'
     drama_pattern = 'http://so.iqiyi.com/so/q_%(keyword)s_ctg_电视剧_t_0_page_1_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_'
     variety_pattern = 'http://so.iqiyi.com/so/q_%(keyword)s_ctg_综艺_t_0_page_1_p_1_qc_0_rd__site_iqiyi_m_1_bitrate_'
-    download_delay = 1
+    download_delay = 2
     handle_httpstatus_list = [302]
+    use_proxy = False
     
     def __init__(self, mode='prod', *args, **kwargs):
         super(IqiyiSpider, self).__init__(mode)

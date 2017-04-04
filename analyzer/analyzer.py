@@ -77,9 +77,9 @@ DEFAULT_ROUTER = {
 }
 
 EXPIRE_DURATION = {
-    'anime': 60,
-    'drama': 60,
-    'variety': 60,
+    'anime': 45,
+    'drama': 45,
+    'variety': 45,
 }
 
 def timeline(feeds, mongo_series):

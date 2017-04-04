@@ -92,6 +92,7 @@ class DynamicProxyMiddleware(object):
             LOCAL_CONFIG = settings.local_config(spider.mode)
         else:
             LOCAL_CONFIG = settings.local_config('test')
+
         redis_db = StrictRedis(
             host=LOCAL_CONFIG['REDIS_HOST'], 
             port=LOCAL_CONFIG['REDIS_PORT'], 
@@ -103,7 +104,11 @@ class DynamicProxyMiddleware(object):
         else:
             logger = logging.getLogger('__main__')
         
-        
+        # 如果spider中设置use_proxy==False则不使用代理
+        if hasattr(spider, 'use_proxy') and spider.use_proxy == False:
+            request.meta['proxy'] = ''
+            logger.debug('不使用代理访问: %s' % request.url)
+            return
         
         # 访问REDIS获得一个随机账号
         account = redis_db.srandmember(ACCOUNT_SET % spider.name)
