@@ -60,12 +60,13 @@ class IqiyiSpider(BaseSpider):
         feed = dict(meta['feed'])
         
         # 剧集分组
-        search_results = response.css('div.s_items ul.clearfix li a')
+        search_results = response.css('div.s_items ul.clearfix li')
         
         if not search_results:
             logger.info('[%s] 未找到番剧...' % kobj['keyword'])
         href_set = set()
-        for series in search_results:
+        for series_item in search_results:
+            series = series_item.css('a')
             title = series.css('::attr(_log_title)').extract_first()
             href = series.css('::attr(href)').extract_first()
             # 跳过预览
@@ -77,7 +78,10 @@ class IqiyiSpider(BaseSpider):
                     continue # 重复项
                 href_set.add(href)
                 epfeed = dict(feed)
-                epfeed['title'] = '%s ep%s' % (title, ep)
+                if series_item.css('.ico_partfree'):
+                    epfeed['title'] = '%s(优酷VIP) ep%s' % (title, ep)
+                else:
+                    epfeed['title'] = '%s ep%s' % (title, ep)
                 epfeed['href'] = href
                 if kobj['type'] == 'anime': 
                     epfeed['type'] = 'bangumi'
