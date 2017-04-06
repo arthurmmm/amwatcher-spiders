@@ -31,7 +31,7 @@ class IqiyiSpider(BaseSpider):
     def start_requests(self):
         self.start_timestamp = datetime.now()
         
-        for kobj in self.mongo_keywords.find({'status': 'activated'}):
+        for kobj in self.mongo_keywords.find({'status': 'activated', '$or': [{ 'tags': '优酷'}, {'type': 'anime'}]}):
             search_words = [kobj['keyword']]
             if 'alias' in kobj:
                 search_words.extend(kobj['alias'])
