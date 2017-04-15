@@ -14,6 +14,19 @@ from logging.handlers import RotatingFileHandler
 
 KEYWORD_COLLECTION = ''
 
+def KeywordEscape(keyword):
+    URL_ESC = {
+        '%': '%25',
+        '/': '%2F',
+        '?': '%3F',
+        '#': '%23',
+        '&': '%26',
+        '=': '%3D'
+    }
+    for k, v in URL_ESC.items():
+        keyword = keyword.replace(k, v)
+    return keyword
+
 class BaseSpider(Spider):    
     def __init__(self, mode='prod', *args, **kwargs):
         LOCAL_CONFIG = settings.local_config(mode)

@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 import pymongo
 import re
-from amwatcher_spider.spiders.base import BaseSpider
+from amwatcher_spider.spiders.base import BaseSpider, KeywordEscape
 from random import random
 from scrapy import Spider, Request
 from scrapy.http import HtmlResponse
@@ -36,7 +36,8 @@ class IqiyiSpider(BaseSpider):
             if 'alias' in kobj:
                 search_words.extend(kobj['alias'])
             for search_word in search_words:
-                search_url = self.search_pattern % { 'keyword': search_word }
+                search_word_url = KeywordEscape(search_word)
+                search_url = self.search_pattern % { 'keyword': search_word_url }
                 feed = {
                     'source': 'youku',
                     'search_word': search_word,

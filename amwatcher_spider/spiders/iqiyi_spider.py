@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 import pymongo
 import re
-from amwatcher_spider.spiders.base import BaseSpider
+from amwatcher_spider.spiders.base import BaseSpider, KeywordEscape
 from random import random
 from scrapy import Spider, Request
 from scrapy.http import HtmlResponse
@@ -38,8 +38,9 @@ class IqiyiSpider(BaseSpider):
             if 'alias' in kobj:
                 search_words.extend(kobj['alias'])
             for search_word in search_words:
+                search_word_url = KeywordEscape(search_word)
                 if kobj['type'] == 'anime': 
-                    bangumi_url = self.bangumi_pattern % { 'keyword': search_word }
+                    bangumi_url = self.bangumi_pattern % { 'keyword': search_word_url }
                     feed = {
                         'source': 'iqiyi',
                         'type': 'bangumi',
@@ -52,7 +53,7 @@ class IqiyiSpider(BaseSpider):
                         'feed': feed, 
                     }, callback=self.parse_bangumi)
                 elif kobj['type'] == 'drama': 
-                    drama_url = self.drama_pattern % { 'keyword': search_word }
+                    drama_url = self.drama_pattern % { 'keyword': search_word_url }
                     feed = {
                         'source': 'iqiyi',
                         'type': 'drama',

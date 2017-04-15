@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 import pymongo
 import re
-from amwatcher_spider.spiders.base import BaseSpider
+from amwatcher_spider.spiders.base import BaseSpider, KeywordEscape
 from random import random
 from scrapy import Spider, Request
 from scrapy.http import HtmlResponse
@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 BILIBILI_ACCOUNT_SET = 'amwatcher:spider:bilibili:accounts'
 PROXY_KEY = 'amwatcher:spider:login_proxy:%s'
+
 
 class BilibiliSpider(BaseSpider):
     name = 'bilibili'
@@ -65,9 +66,10 @@ class BilibiliSpider(BaseSpider):
             if 'alias' in kobj:
                 search_words.extend(kobj['alias'])
             for search_word in search_words:
+                search_word_url = KeywordEscape(kobj['keyword'])
                 if kobj['type'] == 'anime': 
                     # 搜索官方版权番剧
-                    bangumi_url = self.bangumi_pattern % { 'keyword': search_word }
+                    bangumi_url = self.bangumi_pattern % { 'keyword': search_word_url }
                     feed = {
                         'source': 'bilibili',
                         'type': 'bangumi',
@@ -80,7 +82,7 @@ class BilibiliSpider(BaseSpider):
                         'feed': feed, 
                     }, callback=self.parse_bangumi)
                     # 搜索UP主上传番剧
-                    upbangumi_url = self.upbangumi_pattern % { 'keyword': search_word }
+                    upbangumi_url = self.upbangumi_pattern % { 'keyword': search_word_url }
                     feed = {
                         'source': 'bilibili',
                         'type': 'upbangumi',
@@ -93,7 +95,7 @@ class BilibiliSpider(BaseSpider):
                         'feed': feed,
                     }, callback=self.parse_search_result)
                 elif kobj['type'] == 'drama':
-                    updrama_url = self.updrama_pattern % { 'keyword': search_word }
+                    updrama_url = self.updrama_pattern % { 'keyword': search_word_url }
                     feed = {
                         'source': 'bilibili',
                         'type': 'updrama',
@@ -106,7 +108,7 @@ class BilibiliSpider(BaseSpider):
                         'feed': feed,
                     }, callback=self.parse_search_result)
                 elif kobj['type'] == 'variety':
-                    upvariety_url = self.upvariety_pattern % { 'keyword': search_word }
+                    upvariety_url = self.upvariety_pattern % { 'keyword': search_word_url }
                     feed = {
                         'source': 'bilibili',
                         'type': 'upvariety',
