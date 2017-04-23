@@ -66,7 +66,7 @@ class BilibiliSpider(BaseSpider):
             if 'alias' in kobj:
                 search_words.extend(kobj['alias'])
             for search_word in search_words:
-                search_word_url = KeywordEscape(kobj['keyword'])
+                search_word_url = KeywordEscape(search_word)
                 if kobj['type'] == 'anime': 
                     # 搜索官方版权番剧
                     bangumi_url = self.bangumi_pattern % { 'keyword': search_word_url }
