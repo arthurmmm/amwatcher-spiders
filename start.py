@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-import logging
 import logging.config
 import argparse
 from amwatcher_spider import settings
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from redis import StrictRedis
-from datetime import datetime
 from analyzer import analyzer
+import multiprocessing
 
 LOGGING = {
     'version': 1,
@@ -42,13 +41,21 @@ LOGGING = {
 def main(args):
     if args.crawl:
         if args.env == 'test':
-            os.system('scrapy crawl bilibili -a mode=test')
-            os.system('scrapy crawl iqiyi -a mode=test')
-            os.system('scrapy crawl youku -a mode=test')
+            thds = [
+                multiprocessing.Process(target=os.system, args=['scrapy crawl bilibili -a mode=test']),
+                multiprocessing.Process(target=os.system, args=['scrapy crawl iqiyi -a mode=test']),
+                multiprocessing.Process(target=os.system, args=['scrapy crawl youku -a mode=test']),
+            ]
         else:
-            os.system('scrapy crawl bilibili')
-            os.system('scrapy crawl iqiyi')
-            os.system('scrapy crawl youku')
+            thds = [
+                multiprocessing.Process(target=os.system, args=['scrapy crawl bilibili']),
+                multiprocessing.Process(target=os.system, args=['scrapy crawl iqiyi']),
+                multiprocessing.Process(target=os.system, args=['scrapy crawl youku']),
+            ]
+        for thd in thds:
+            thd.start()
+        for thd in thds:
+            thd.join()
     if args.analyze:
         # 逐条分析采集数据
         if args.analyze_all:
