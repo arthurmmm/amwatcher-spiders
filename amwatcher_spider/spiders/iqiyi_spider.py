@@ -1,19 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import json
-import time
 from datetime import datetime
-import pymongo
-import re
 from amwatcher_spider.spiders.base import BaseSpider, KeywordEscape
-from random import random
 from scrapy import Spider, Request
-from scrapy.http import HtmlResponse
-from collections import defaultdict
 import logging
-import requests
-from logging.handlers import RotatingFileHandler
-
 logger = logging.getLogger(__name__)
 
 PROXY_KEY = 'amwatcher:spider:login_proxy:%s'
@@ -116,32 +106,6 @@ class IqiyiSpider(BaseSpider):
                         yield epfeed
             else:
                 continue # 非官方资源质量太差，仅收录官方。。
-                '''
-                epfeed = dict(feed)
-                epfeed['type'] = 'upbangumi'
-                epfeed['title'] = link.css('::attr(title)').extract_first()
-                
-                epfeed['href'] = link.css('::attr(href)').extract_first()
-                epfeed['scrapy_time'] = datetime.now()
-                epfeed['scrapy_start_time'] = self.start_timestamp
-                try:
-                    epfeed['upload_time'] = datetime.strptime(
-                        series.css('em.result_info_desc::text').extract_first(), 
-                        '%Y-%m-%d'
-                    )
-                except Exception:
-                    epfeed['upload_time'] = epfeed['scrapy_time']
-                # feed['season'] = 'NO_SEASON'
-                # 检查是否存在
-                exfeed = self.mongo_feeds.find_one({
-                    'title': epfeed['title'],
-                    'keyword_title': kobj['keyword'],
-                })
-                if exfeed:
-                    logger.info('该条目已存在，略过...')
-                else:
-                    yield epfeed
-                '''
 
     def parse_drama(self, response):
         ''' 爬取爱奇艺电视剧
@@ -188,25 +152,3 @@ class IqiyiSpider(BaseSpider):
                         yield epfeed
             else:
                 continue # 非官方资源质量太差，仅收录官方。。
-                '''
-                epfeed = dict(feed)
-                epfeed['type'] = 'updrama'
-                epfeed['title'] = link.css('::attr(title)').extract_first()
-                epfeed['upload_time'] = datetime.strptime(
-                    series.css('em.result_info_desc::text').extract_first(), 
-                    '%Y-%m-%d'
-                )
-                epfeed['href'] = link.css('::attr(href)').extract_first()
-                epfeed['scrapy_time'] = datetime.now()
-                epfeed['scrapy_start_time'] = self.start_timestamp
-                # feed['season'] = 'NO_SEASON'
-                # 检查是否存在
-                exfeed = self.mongo_feeds.find_one({
-                    'title': epfeed['title'],
-                    'keyword_title': kobj['keyword'],
-                })
-                if exfeed:
-                    logger.info('该条目已存在，略过...')
-                else:
-                    yield epfeed
-                '''

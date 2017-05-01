@@ -7,74 +7,13 @@ from collections import defaultdict
 
 logger = logging.getLogger('__main__')
 
-DEFAULT_ROUTER = {
-    'bilibili': {
-        'bangumi': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'upbangumi': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'updrama': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'upvariety': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-    },
-    'iqiyi': {
-        'bangumi': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'upbangumi': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'drama': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'updrama': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-    },
-    'youku': {
-        'bangumi': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'upbangumi': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'drama': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-        'updrama': [
-            ['keyword_in_title', 0],
-            ['extract_episode'],
-            ['upload_within', 365],
-        ],
-    },
-}
+DEFAULT_RULE = [
+    ['keyword_in_title', 0],
+    ['extract_episode'],
+    ['upload_within', 365],
+]
+
+DEFAULT_ROUTER = {}
 
 EXPIRE_DURATION = {
     'anime': 45,
@@ -218,7 +157,10 @@ def analyze(feed, condition, router=DEFAULT_ROUTER):
     ''' 逐条分析采集数据，进行初步验证并解析剧集数
     '''
     feed['break_rules'] = []
-    for rule_obj in router[feed['source']][feed['type']]:
+    rule_list = DEFAULT_RULE
+    if feed['source'] in router and feed['type'] in router:
+        rule_list = router[feed['source']][feed['type']]
+    for rule_obj in rule_list:
         rule_name = rule_obj[0]
         rule_args = rule_obj[1:]
         logger.debug('执行规则 %s' % rule_name)

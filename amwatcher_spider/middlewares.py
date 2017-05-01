@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 PROXY_SET = 'hq-proxies:proxy_pool'
 ACCOUNT_SET = 'amwatcher:spider:%s:accounts'
 PROXY_KEY = 'amwatcher:spider:login_proxy:%s'
+BAN_KEY = 'amwatcher:spider:ban:%s:%s'
 
 class AmwatcherUserAgentMiddleware(UserAgentMiddleware):
     
@@ -103,7 +104,7 @@ class DynamicProxyMiddleware(object):
             logger = spider.spider_logger
         else:
             logger = logging.getLogger('__main__')
-        
+
         # 如果spider中设置use_proxy==False则不使用代理
         if hasattr(spider, 'use_proxy') and spider.use_proxy == False:
             request.meta['proxy'] = ''

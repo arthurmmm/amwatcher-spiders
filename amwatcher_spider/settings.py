@@ -64,7 +64,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 DOWNLOAD_TIMEOUT = 5
 RETRY_TIMES = 3
-RETRY_HTTP_CODES = [500, 502, 503, 504, 400, 408, 302]
+RETRY_HTTP_CODES = [403, 500, 502, 503, 504, 400, 408, 302]
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html

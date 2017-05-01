@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import json
-import time
 from datetime import datetime
-import pymongo
 import re
 from amwatcher_spider.spiders.base import BaseSpider, KeywordEscape
-from random import random
 from scrapy import Spider, Request
 from scrapy.http import HtmlResponse
-from collections import defaultdict
 import logging
 import requests
-from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger(__name__)
 
