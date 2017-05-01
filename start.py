@@ -45,12 +45,14 @@ def main(args):
                 multiprocessing.Process(target=os.system, args=['scrapy crawl bilibili -a mode=test']),
                 multiprocessing.Process(target=os.system, args=['scrapy crawl iqiyi -a mode=test']),
                 multiprocessing.Process(target=os.system, args=['scrapy crawl youku -a mode=test']),
+                multiprocessing.Process(target=os.system, args=['scrapy crawl acfun -a mode=test']),
             ]
         else:
             thds = [
                 multiprocessing.Process(target=os.system, args=['scrapy crawl bilibili']),
                 multiprocessing.Process(target=os.system, args=['scrapy crawl iqiyi']),
                 multiprocessing.Process(target=os.system, args=['scrapy crawl youku']),
+                multiprocessing.Process(target=os.system, args=['scrapy crawl acfun']),
             ]
         for thd in thds:
             thd.start()
